@@ -69,22 +69,24 @@ export class UserController extends Controller {
       return notFound(404, { message: "No orders found for this user." });
     }
 
-    return orders.map((order) => ({
-      id: order.id,
-      price: order.house.price,
-      userId: order.userId,
-      houseId: order.houseId,
-      username: order.user?.username || "unknown",
-      avatarUrl: order.user?.avatarUrl || null,
-      createdAt: order.createdAt,
-      imageUrl: order.house.imageUrl,
-      address: order.house.address,
-      city: order.house.city,
-      state: order.house.state,
-      zipCode: order.house.zipCode,
-      caption: order.house.caption,
-      size: order.house.size,
-    }));
+    return orders
+      .filter((order) => order.house !== null && order.house.id !== null)
+      .map((order) => ({
+        id: order.id,
+        price: order.house.price,
+        userId: order.userId,
+        houseId: order.houseId,
+        username: order.user?.username || "unknown",
+        avatarUrl: order.user?.avatarUrl || null,
+        createdAt: order.createdAt,
+        imageUrl: order.house.imageUrl,
+        address: order.house.address,
+        city: order.house.city,
+        state: order.house.state,
+        zipCode: order.house.zipCode,
+        caption: order.house.caption,
+        size: order.house.size,
+      }));
   }
 
   @Get("{userId}/likes")
@@ -101,27 +103,30 @@ export class UserController extends Controller {
 
     const posts = await AppDataSource.getRepository(Like).find({
       where: { userId },
-      relations: ["user"],
+      relations: ["user", "house"],
+      order: { createdAt: "DESC" },
     });
 
     if (posts.length === 0) {
       return notFound(404, { message: "No liked posts found for this user." });
     }
 
-    return posts.map((post) => ({
-      id: post.id,
-      imageUrl: post.house.imageUrl,
-      caption: post.house.caption,
-      price: post.house.price,
-      address: post.house.address,
-      state: post.house.state,
-      city: post.house.city,
-      zipCode: post.house.zipCode,
-      size: post.house.size,
-      createdAt: post.createdAt,
-      userId: post.userId,
-      username: post.user?.username || "unknown",
-      avatarUrl: post.user?.avatarUrl || null,
-    }));
+    return posts
+      .filter((post) => post && post.house && post.house.id && post.user)
+      .map((post) => ({
+        id: post.id,
+        imageUrl: post.house.imageUrl,
+        caption: post.house.caption,
+        price: post.house.price,
+        address: post.house.address,
+        state: post.house.state,
+        city: post.house.city,
+        zipCode: post.house.zipCode,
+        size: post.house.size,
+        createdAt: post.createdAt,
+        userId: post.userId,
+        username: post.user?.username || "unknown",
+        avatarUrl: post.user?.avatarUrl || null,
+      }));
   }
 }

@@ -1,7 +1,7 @@
 import {
   Body,
   Get,
-  Post as HttpPost,
+  Post,
   Route,
   Tags,
   Security,
@@ -21,7 +21,7 @@ import type { JwtPayload } from "./utils";
 export interface CreateHouseBase64Input {
   imageBase64: string;
   imageFileType: string;
-  caption?: string;
+  caption: string;
   price: number;
   address: string;
   state: string;
@@ -50,7 +50,7 @@ export interface HouseResponse {
 @Tags("Houses")
 export class HouseController extends Controller {
   @Security("jwt")
-  @HttpPost("")
+  @Post("")
   @SuccessResponse(200, "Post Created")
   public async createHouse(
     @Request() req: Express.Request,
@@ -82,7 +82,7 @@ export class HouseController extends Controller {
       const newPost = postRepo.create({
         userId: currentUser.userId,
         imageUrl: uploadResult.objectUrl,
-        caption: body.caption || null,
+        caption: body.caption,
         price: body.price,
         address: body.address,
         state: body.state,
@@ -154,9 +154,9 @@ export class HouseController extends Controller {
     @Query() query: string,
     @Query() limit: number = 10,
     @Query() offset: number = 0,
-    @Query() state: string | undefined = undefined,
-    @Query() city: string | undefined = undefined,
-    @Query() zipCode: string | undefined = undefined,
+    @Query() state: string = "",
+    @Query() city: string = "",
+    @Query() zipCode: string = "",
     @Res() badRequestResponse: TsoaResponse<400, { message: string }>
   ): Promise<HouseResponse[]> {
     if (!query.trim()) {
@@ -167,44 +167,48 @@ export class HouseController extends Controller {
     const searchTerm = query.trim().split(/\s+/).join(" & ");
 
     let searchHandle = AppDataSource.getRepository(House)
-      .createQueryBuilder("post")
-      .leftJoinAndSelect("post.user", "user")
-      .where("to_tsvector(post.caption) @@ plainto_tsquery(:query)", {
+      .createQueryBuilder("houses")
+      .leftJoinAndSelect("houses.user", "user")
+      .where("to_tsvector(houses.address) @@ plainto_tsquery(:query)", {
         query: searchTerm,
       });
 
-    if (state) {
-      searchHandle = searchHandle.andWhere("post.state = :state", { state });
+    if (state.trim()) {
+      searchHandle = searchHandle.andWhere("houses.state = :state", {
+        state: state.trim(),
+      });
     }
-    if (city) {
-      searchHandle = searchHandle.andWhere("post.city = :city", { city });
+    if (city.trim()) {
+      searchHandle = searchHandle.andWhere("houses.city = :city", {
+        city: city.trim(),
+      });
     }
-    if (zipCode) {
-      searchHandle = searchHandle.andWhere("post.zipCode = :zipCode", {
-        zipCode,
+    if (zipCode.trim()) {
+      searchHandle = searchHandle.andWhere("houses.zipCode = :zipCode", {
+        zipCode: zipCode.trim(),
       });
     }
 
-    const posts = await searchHandle
-      .orderBy("post.createdAt", "DESC")
+    const houses = await searchHandle
+      .orderBy("houses.createdAt", "DESC")
       .take(limit)
       .skip(offset)
       .getMany();
 
-    return posts.map((post) => ({
-      id: post.id,
-      imageUrl: post.imageUrl,
-      caption: post.caption,
-      price: post.price,
-      address: post.address,
-      state: post.state,
-      city: post.city,
-      zipCode: post.zipCode,
-      size: post.size,
-      createdAt: post.createdAt,
-      userId: post.userId,
-      username: post.user?.username || "unknown",
-      avatarUrl: post.user?.avatarUrl || null,
+    return houses.map((house) => ({
+      id: house.id,
+      imageUrl: house.imageUrl,
+      caption: house.caption,
+      price: house.price,
+      address: house.address,
+      state: house.state,
+      city: house.city,
+      zipCode: house.zipCode,
+      size: house.size,
+      createdAt: house.createdAt,
+      userId: house.userId,
+      username: house.user?.username || "unknown",
+      avatarUrl: house.user?.avatarUrl || null,
     }));
   }
 
@@ -213,29 +217,29 @@ export class HouseController extends Controller {
     @Path() houseId: number,
     @Res() notFoundResponse: TsoaResponse<404, { message: string }>
   ): Promise<HouseResponse> {
-    const post = await AppDataSource.getRepository(House).findOne({
+    const house = await AppDataSource.getRepository(House).findOne({
       where: { id: houseId },
       relations: ["user"],
     });
 
-    if (!post) {
-      return notFoundResponse(404, { message: "Post not found" });
+    if (!house) {
+      return notFoundResponse(404, { message: "House not found" });
     }
 
     return {
-      id: post.id,
-      imageUrl: post.imageUrl,
-      caption: post.caption,
-      price: post.price,
-      address: post.address,
-      state: post.state,
-      city: post.city,
-      zipCode: post.zipCode,
-      size: post.size,
-      createdAt: post.createdAt,
-      userId: post.userId,
-      username: post.user?.username || "unknown",
-      avatarUrl: post.user?.avatarUrl || null,
+      id: house.id,
+      imageUrl: house.imageUrl,
+      caption: house.caption,
+      price: house.price,
+      address: house.address,
+      state: house.state,
+      city: house.city,
+      zipCode: house.zipCode,
+      size: house.size,
+      createdAt: house.createdAt,
+      userId: house.userId,
+      username: house.user?.username || "unknown",
+      avatarUrl: house.user?.avatarUrl || null,
     };
   }
 }

@@ -73,6 +73,51 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"CreateHouseBase64Input": {
+				"properties": {
+					"imageBase64": {
+						"type": "string"
+					},
+					"imageFileType": {
+						"type": "string"
+					},
+					"caption": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"address": {
+						"type": "string"
+					},
+					"state": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"size": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"imageBase64",
+					"imageFileType",
+					"caption",
+					"price",
+					"address",
+					"state",
+					"city",
+					"zipCode",
+					"size"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"UserProfileResponse": {
 				"properties": {
 					"id": {
@@ -133,6 +178,31 @@
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"houseImageUrl": {
+						"type": "string"
+					},
+					"houseCaption": {
+						"type": "string"
+					},
+					"houseAddress": {
+						"type": "string"
+					},
+					"houseState": {
+						"type": "string"
+					},
+					"houseCity": {
+						"type": "string"
+					},
+					"houseZipCode": {
+						"type": "string"
+					},
+					"houseSize": {
+						"type": "string"
+					},
+					"housePrice": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -142,7 +212,15 @@
 					"houseId",
 					"username",
 					"avatarUrl",
-					"createdAt"
+					"createdAt",
+					"houseImageUrl",
+					"houseCaption",
+					"houseAddress",
+					"houseState",
+					"houseCity",
+					"houseZipCode",
+					"houseSize",
+					"housePrice"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -256,6 +334,76 @@
 	},
 	"paths": {
 		"/houses": {
+			"post": {
+				"operationId": "CreateHouse",
+				"responses": {
+					"200": {
+						"description": "Post Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HouseResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Houses"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateHouseBase64Input"
+							}
+						}
+					}
+				}
+			},
 			"get": {
 				"operationId": "GetFeedHouses",
 				"responses": {
@@ -375,6 +523,7 @@
 						"name": "state",
 						"required": false,
 						"schema": {
+							"default": "",
 							"type": "string"
 						}
 					},
@@ -383,6 +532,7 @@
 						"name": "city",
 						"required": false,
 						"schema": {
+							"default": "",
 							"type": "string"
 						}
 					},
@@ -391,6 +541,7 @@
 						"name": "zipCode",
 						"required": false,
 						"schema": {
+							"default": "",
 							"type": "string"
 						}
 					}
@@ -603,9 +754,71 @@
 				]
 			}
 		},
+		"/houses/{houseId}/like": {
+			"post": {
+				"operationId": "LikeHouse",
+				"responses": {
+					"201": {
+						"description": "Liked",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Interactions (Likes & Orders)"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "houseId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/houses/{houseId}/unlike": {
 			"delete": {
-				"operationId": "UnlikePost",
+				"operationId": "UnlikeHouse",
 				"responses": {
 					"200": {
 						"description": "Unliked",
@@ -648,6 +861,58 @@
 			}
 		},
 		"/houses/{houseId}/orders": {
+			"post": {
+				"operationId": "CreateOrder",
+				"responses": {
+					"201": {
+						"description": "Order Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OrderResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Interactions (Likes & Orders)"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "houseId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
 			"get": {
 				"operationId": "GetOrders",
 				"responses": {

@@ -1,5 +1,5 @@
 import {
-  Post as HttpPost,
+  Post,
   Delete,
   Route,
   Tags,
@@ -25,6 +25,14 @@ export interface OrderResponse {
   username: string;
   avatarUrl: string | null;
   createdAt: Date;
+  houseImageUrl: string;
+  houseCaption: string;
+  houseAddress: string;
+  houseState: string;
+  houseCity: string;
+  houseZipCode: string;
+  houseSize: string;
+  housePrice: number;
 }
 
 @Route("houses/{houseId}")
@@ -32,7 +40,7 @@ export interface OrderResponse {
 export class InteractionController extends Controller {
   @Security("jwt")
   @SuccessResponse(201, "Liked")
-  @HttpPost("like")
+  @Post("like")
   public async likeHouse(
     @Request() req: Express.Request,
     @Path() houseId: number,
@@ -40,26 +48,26 @@ export class InteractionController extends Controller {
   ): Promise<{ message: string }> {
     const currentUser = req.user as JwtPayload;
 
-    const post = await AppDataSource.getRepository(House).findOneBy({
+    const house = await AppDataSource.getRepository(House).findOneBy({
       id: houseId,
     });
-    if (!post) return notFoundResponse(404, { message: "Post not found." });
+    if (!house) return notFoundResponse(404, { message: "House not found." });
 
     const user = await AppDataSource.getRepository(User).findOneBy({
       id: currentUser.userId,
     });
     if (!user) throw new Error("User not found");
 
-    const like = Like.create({ house: post, user, houseId, userId: user.id });
+    const like = Like.create({ house: house, user, houseId, userId: user.id });
     await like.save();
 
-    return { message: "Post liked successfully" };
+    return { message: "House liked successfully" };
   }
 
   @Security("jwt")
   @SuccessResponse(200, "Unliked")
   @Delete("unlike")
-  public async unlikePost(
+  public async unlikeHouse(
     @Request() req: Express.Request,
     @Path() houseId: number
   ): Promise<{ message: string }> {
@@ -70,12 +78,12 @@ export class InteractionController extends Controller {
       userId: currentUser.userId,
     });
 
-    return { message: "Post unliked successfully" };
+    return { message: "House unliked successfully" };
   }
 
   @Security("jwt")
   @SuccessResponse(201, "Order Created")
-  @HttpPost("orders")
+  @Post("orders")
   public async createOrder(
     @Request() req: Express.Request,
     @Path() houseId: number,
@@ -109,6 +117,14 @@ export class InteractionController extends Controller {
       username: user.username,
       avatarUrl: user.avatarUrl,
       createdAt: saved.createdAt,
+      houseImageUrl: house.imageUrl,
+      houseCaption: house.caption || "",
+      houseAddress: house.address || "",
+      houseState: house.state || "",
+      houseCity: house.city || "",
+      houseZipCode: house.zipCode || "",
+      houseSize: house.size || "",
+      housePrice: house.price || 0,
     };
   }
 
@@ -140,6 +156,14 @@ export class InteractionController extends Controller {
       username: order.user?.username || "unknown",
       avatarUrl: order.user?.avatarUrl || null,
       createdAt: order.createdAt,
+      houseImageUrl: house.imageUrl,
+      houseCaption: house.caption || "",
+      houseAddress: house.address || "",
+      houseState: house.state || "",
+      houseCity: house.city || "",
+      houseZipCode: house.zipCode || "",
+      houseSize: house.size || "",
+      housePrice: house.price || 0,
     }));
   }
 }
