@@ -1,0 +1,92 @@
+[
+  {
+    "caption": "Cozy Family Home with Spacious Backyard",
+    "price": 350000,
+    "address": "1023 Maple Drive",
+    "state": "CA",
+    "city": "Los Angeles",
+    "zipCode": "90035",
+    "size": "1,800 sqft"
+  },
+  {
+    "caption": "Modern Condo in Downtown",
+    "price": 475000,
+    "address": "401 S Main St Apt 22B",
+    "state": "IL",
+    "city": "Chicago",
+    "zipCode": "60607",
+    "size": "1,200 sqft"
+  },
+  {
+    "caption": "Luxury Lakeview Villa",
+    "price": 1250000,
+    "address": "88 Lakeshore Blvd",
+    "state": "FL",
+    "city": "Orlando",
+    "zipCode": "32819",
+    "size": "3,500 sqft"
+  },
+  {
+    "caption": "Charming Historic Cottage",
+    "price": 295000,
+    "address": "55 Pine Tree Lane",
+    "state": "TX",
+    "city": "Austin",
+    "zipCode": "78704",
+    "size": "1,100 sqft"
+  },
+  {
+    "caption": "Spacious Ranch with Pool",
+    "price": 630000,
+    "address": "2147 West Oak Avenue",
+    "state": "AZ",
+    "city": "Phoenix",
+    "zipCode": "85016",
+    "size": "2,900 sqft"
+  },
+  {
+    "caption": "Penthouse Apartment with Skyline Views",
+    "price": 980000,
+    "address": "1801 Liberty St Unit PH",
+    "state": "NY",
+    "city": "New York",
+    "zipCode": "10013",
+    "size": "1,600 sqft"
+  },
+  {
+    "caption": "Suburban Townhouse Near Parks",
+    "price": 420000,
+    "address": "330 Cedar Grove Ct",
+    "state": "WA",
+    "city": "Seattle",
+    "zipCode": "98115",
+    "size": "1,750 sqft"
+  },
+  {
+    "caption": "Bright Studio Perfect for Singles",
+    "price": 250000,
+    "address": "12 King St Apt 306",
+    "state": "MA",
+    "city": "Boston",
+    "zipCode": "02118",
+    "size": "650 sqft"
+  },
+  {
+    "caption": "Renovated Colonial on Large Lot",
+    "price": 799000,
+    "address": "201 Heritage Road",
+    "state": "NJ",
+    "city": "Princeton",
+    "zipCode": "08540",
+    "size": "2,800 sqft"
+  },
+  {
+    "caption": "Affordable Starter Home",
+    "price": 199000,
+    "address": "876 Willow Ave",
+    "state": "OH",
+    "city": "Columbus",
+    "zipCode": "43215",
+    "size": "900 sqft"
+  }
+]
