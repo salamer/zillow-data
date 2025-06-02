@@ -66,7 +66,7 @@ export class UserController extends Controller {
     });
 
     if (orders.length === 0) {
-      return notFound(404, { message: "No orders found for this user." });
+      return [];
     }
 
     return orders
@@ -108,7 +108,7 @@ export class UserController extends Controller {
     });
 
     if (posts.length === 0) {
-      return notFound(404, { message: "No liked posts found for this user." });
+      return [];
     }
 
     return posts

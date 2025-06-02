@@ -17,6 +17,7 @@ import { AppDataSource } from "./models";
 import { House, User } from "./models";
 import { uploadBase64ToObjectStorage } from "./objectstorage.service";
 import type { JwtPayload } from "./utils";
+import { getCurrentUser } from "./auth.middleware";
 
 export interface CreateHouseBase64Input {
   imageBase64: string;
@@ -49,7 +50,7 @@ export interface HouseResponse {
 @Route("houses")
 @Tags("Houses")
 export class HouseController extends Controller {
-  @Security("jwt")
+  // @Security("jwt")
   @Post("")
   @SuccessResponse(200, "Post Created")
   public async createHouse(
@@ -58,7 +59,8 @@ export class HouseController extends Controller {
     @Res() badRequestResponse: TsoaResponse<400, { message: string }>,
     @Res() serverErrorResponse: TsoaResponse<500, { message: string }>
   ): Promise<HouseResponse> {
-    const currentUser = req.user as JwtPayload;
+    // const currentUser = req.user as JwtPayload;
+    const currentUser = getCurrentUser();
 
     if (!body.imageBase64 || !body.imageFileType.startsWith("image/")) {
       return badRequestResponse(400, {
